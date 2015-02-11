@@ -1,0 +1,7 @@
+.vagrant
+puppet/modules/concat/
+puppet/modules/stdlib/
+puppet/modules/mysql/
+puppet/modules/vcsrepo/
+puppet/modules/apt/
+puppet/modules/nginx/
