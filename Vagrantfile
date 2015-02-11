@@ -2,18 +2,18 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "omegaup-utopic"
-  config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/utopic/current/utopic-server-cloudimg-amd64-vagrant-disk1.box"
+	config.vm.box = "omegaup-utopic"
+	config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/utopic/current/utopic-server-cloudimg-amd64-vagrant-disk1.box"
 
-  # Redirige localhost:8080 hacia el puerto 80 de la VM
-  config.vm.network :forwarded_port, guest: 80, host: 8080
+	# Redirige localhost:8080 hacia el puerto 80 de la VM
+	config.vm.network :forwarded_port, guest: 80, host: 8080
 
-  # Permite usar las llaves SSH del host en la VM
-  config.ssh.forward_agent = true
+	# Permite usar las llaves SSH del host en la VM
+	config.ssh.forward_agent = true
 
-  config.vm.provider "virtualbox" do |vb|
-    # Compilar grader y runner necesita al menos 2GB de memoria
-    vb.customize ["modifyvm", :id, "--memory", "2048"]
+	config.vm.provider "virtualbox" do |vb|
+		# Compilar grader y runner necesita al menos 2GB de memoria
+		vb.customize ["modifyvm", :id, "--memory", "2048"]
 	end
 
 	config.vm.provision :shell do |shell|
@@ -38,8 +38,8 @@ Vagrant.configure("2") do |config|
 			fi"
 	end
 
-  # Instala todo usando Puppet
-  config.vm.provision :puppet do |puppet|
+	# Instala todo usando Puppet
+	config.vm.provision :puppet do |puppet|
 		puppet.manifests_path = 'puppet/manifests'
 		puppet.module_path = 'puppet/modules'
 		puppet.manifest_file = 'omegaup.pp'
