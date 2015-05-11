@@ -7,9 +7,12 @@ Vagrant.configure("2") do |config|
 
 	# Redirige localhost:8080 hacia el puerto 80 de la VM
 	config.vm.network :forwarded_port, guest: 80, host: 8080
+	# Expone el puerto del servicio del backend.
+	config.vm.network :forwarded_port, guest: 21680, host: 21680
 
 	# Permite usar las llaves SSH del host en la VM
 	config.ssh.forward_agent = true
+	config.ssh.forward_x11 = true
 
 	config.vm.provider "virtualbox" do |vb|
 		# Compilar grader y runner necesita al menos 2GB de memoria
