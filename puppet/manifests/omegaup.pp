@@ -254,7 +254,6 @@ service { 'omegaup':
   ensure  => running,
   enable  => true,
   require => [File['/etc/init.d/omegaup'], File['/var/lib/omegaup/grade'],
-              File["${omegaup_root}/bin/mysql.jar"],
               File["${omegaup_root}/bin/omegaup.jks"],
               Exec["${omegaup_root}/bin/omegaup.conf"],
               Package['libmysql-java'], Mysql::Db['omegaup']],

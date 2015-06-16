@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provider "virtualbox" do |vb|
 		# Compilar grader y runner necesita al menos 2GB de memoria
-		vb.customize ["modifyvm", :id, "--memory", "2048"]
+		vb.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "1"]
 	end
 
 	config.vm.provision :shell do |shell|
