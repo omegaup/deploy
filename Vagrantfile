@@ -58,7 +58,7 @@ Vagrant.configure("2") do |config|
 	# INSTRUCCIONES:
 	# corre vagrant up normalemente.
 	# cambia disabled: false
-	# corre vagrant provision
+	# corre vagrant reload
 	# corre vagrant rsync   cada que hagas un cambio localmente para que se refleje en vagrant o vagrant rsync-auto para que mueva los cambios automáticamente. 
 		config.vm.synced_folder "~/Documents/omegaup/omegaup-vagrant/omegaup", "/opt/omegaup", type: "rsync",
 	    rsync__exclude: ".git/",
