@@ -120,7 +120,6 @@ vcsrepo { $omegaup_root:
   ensure   => present,
   provider => git,
   source   => 'https://github.com/omegaup/omegaup.git',
-  revision => 'utopic',
   user     => 'vagrant',
   group    => 'vagrant',
   require  => File[$omegaup_root],
