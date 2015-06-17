@@ -311,7 +311,7 @@ nginx::resource::location { 'php':
   proxy                => undef,
   fastcgi_script       => undef,
   location_cfg_prepend => {
-    fastcgi_param     => 'SCRIPT_FILENAME \$document_root\$fastcgi_script_name',
+    fastcgi_param     => 'SCRIPT_FILENAME $document_root$fastcgi_script_name',
     fastcgi_index     => 'index.php',
     fastcgi_keep_conn => 'on',
   }
