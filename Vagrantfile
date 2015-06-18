@@ -54,15 +54,17 @@ Vagrant.configure("2") do |config|
 		}
 	end
 
-	# Sincronizar un folder local con vagrant. Muy útil si no quieres developear adentro de la VM de Vagrant
+	# Sincronizar un folder local con vagrant. Muy útil si quieres desarrollar usando un IDE.
 	# INSTRUCCIONES:
-	# corre vagrant up normalemente.
-	# ajusta "<path a tu omegaup local>"
-	# cambia disabled: false
-	# corre vagrant reload
-	# corre vagrant rsync   cada que hagas un cambio localmente para que se refleje en vagrant o vagrant rsync-auto para que mueva los cambios automáticamente. 
-		config.vm.synced_folder "<path a tu omegaup local>", "/opt/omegaup", type: "rsync",
-	    rsync__exclude: ".git/",
+	# * Ejecuta `vagrant up` normalemente.
+	# * Ajusta "<path a tu omegaup local>"
+	# * Cambia la propiedad 'disabled' a false
+	# * Ejecuta `vagrant reload`
+	# * Ejecuta `vagrant rsync` cada que hagas un cambio localmente para que se
+	#   refleje en vagrant o `vagrant rsync-auto` para que se actualice
+	#   automáticamente. 
+	config.vm.synced_folder "<path a tu omegaup local>", "/opt/omegaup", type: "rsync",
+		rsync__exclude: ".git/",
 		rsync__args: "-rv",
 		disabled: true
 end
