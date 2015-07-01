@@ -17,10 +17,10 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="omegaUp Runner"
 NAME=runner
-LOGFILE=/opt/omegaup/runner.log
+LOGFILE=/opt/omegaup/runner_stderr.log
 DAEMON=/usr/bin/java
 DAEMON_ROOT=/opt/omegaup/bin
-DAEMON_ARGS="-jar $DAEMON_ROOT/runner.jar --config $DAEMON_ROOT/omegaup.conf --output $LOGFILE"
+DAEMON_ARGS="-jar $DAEMON_ROOT/runner.jar --config /etc/omegaup/omegaup.conf --output $LOGFILE"
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 USER=omegaup
