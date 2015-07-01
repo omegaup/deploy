@@ -23,23 +23,36 @@ class Chroot:
 			shutil.rmtree(path, True)
 		os.mkdir(path)
 	
-	def __chroot_path(self, path):
-		return self.chroot + path[len(self.mountpoint)-1:]
+	def __chroot_path(self, path, relative_to=None):
+                root = relative_to
+                if root is None:
+                    root = self.mountpoint
+		assert path.startswith(root.rstrip('/')), '%s does not start with %s' % (path, root)
+		return self.chroot + path[len(root)-1:]
 
-	def mkdir(self, path):
-		if not os.path.isdir(self.__chroot_path(path)):
-			os.makedirs(self.__chroot_path(path))
+	def mkdir(self, path, relative_to=None):
+		path_components = os.path.relpath(self.__chroot_path(path, relative_to),
+			self.chroot).split('/')
+		for i in xrange(len(path_components) + 1):
+			path = os.path.join(self.chroot, *path_components[:i])
+			if not os.path.isdir(path):
+				os.mkdir(path)
 
-	def copyfromhost(self, path, exclude=[]):
+	def copyfromhost(self, path, relative_to=None, exclude=[]):
 		if '*' in path:
 			for p in glob.glob(path):
-				self.copyfromhost(p, exclude)
+				self.copyfromhost(p, relative_to, exclude)
 			return
-		self.mkdir(os.path.dirname(path))
+		try:
+			self.mkdir(os.path.dirname(path), relative_to)
+		except AssertionError:
+			# The roots might try to create their parent directory,
+			# which will be outside the root.
+			pass
 		if os.path.isdir(os.path.realpath(path)):
 			for root, dirs, files in os.walk(path):
 				if any([root.startswith(e) for e in exclude]): continue
-				self.mkdir(root)
+				self.mkdir(root, relative_to)
 				for f in files:
 					filepath = os.path.join(root, f)
 					if os.path.islink(filepath):
@@ -49,11 +62,11 @@ class Chroot:
 							self.symlink(filepath, target)
 						else:
 							try:
-								os.link(abspath, self.__chroot_path(filepath))
+								os.link(abspath, self.__chroot_path(filepath, relative_to))
 							except OSError, e:
 								print e, abspath, filepath
 					else:
-						os.link(os.path.realpath(filepath), self.__chroot_path(filepath))
+						os.link(os.path.realpath(filepath), self.__chroot_path(filepath, relative_to))
 				for d in dirs:
 					dirpath = os.path.join(root, d)
 					if os.path.islink(dirpath):
@@ -62,13 +75,16 @@ class Chroot:
 						if abspath.startswith(self.mountpoint):
 							self.symlink(dirpath, target)
 						else:
-							shutil.copytree(abspath, self.__chroot_path(dirpath))
+							shutil.copytree(abspath, self.__chroot_path(dirpath, relative_to))
 		else:
-			os.link(os.path.realpath(path), self.__chroot_path(path))
+			os.link(os.path.realpath(path), self.__chroot_path(path, relative_to))
 	
 	def install(self, path, source):
 		self.mkdir(os.path.dirname(path))
-		shutil.copy(source, self.__chroot_path(path))
+		while os.path.islink(source):
+			source = os.path.join(os.path.dirname(source),
+				os.readlink(source))
+		os.link(source, self.__chroot_path(path))
 
 	def symlink(self, path, destination):
 		self.mkdir(os.path.dirname(path))
@@ -79,6 +95,7 @@ class Chroot:
 		f = open(self.__chroot_path(path), 'w')
 		f.write(contents)
 		f.close()
+		os.utime(self.__chroot_path(path), (0, 0))
 	
 	def extract(self, archive, sha1, skipprefix, url, exclude=[]):
 		if not os.path.exists(archive):
@@ -139,16 +156,16 @@ with Chroot('root', '/') as root:
 	root.mkdir('/sys/')
 
 	# Mountpoints for libraries
-	root.mkdir('/usr/lib/ruby/1.9.1/')
+	root.mkdir('/usr/lib/ruby/2.1.0/')
 	root.mkdir('/usr/lib/python2.7/')
 	root.mkdir('/usr/lib/jvm/')
 	root.mkdir('/usr/lib/ghc/')
 	root.mkdir('/opt/nodejs/')
 
-	root.symlink('/usr/lib/libruby-1.9.1.so.1.9', '/usr/lib/ruby/1.9.1/libruby-1.9.1.so.1.9')
+	root.symlink('/usr/lib/x86_64-linux-gnu/libruby-2.1.so.2.1', '/usr/lib/ruby/2.1.0/libruby-2.1.so.2.1')
 	root.symlink('/usr/bin/node', '/opt/nodejs/bin/node')
 	root.symlink('/usr/bin/java', '/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java')
-	root.symlink('/usr/bin/ruby', '/usr/lib/ruby/1.9.1/ruby')
+	root.symlink('/usr/bin/ruby', '/usr/lib/ruby/2.1.0/ruby')
 	root.symlink('/usr/bin/python', '/usr/lib/python2.7/python')
 	root.symlink('/usr/bin/ghc', '/usr/lib/ghc/lib/ghc')
 
@@ -243,6 +260,7 @@ with Chroot('root-compilers', '/') as root:
 	root.symlink('/usr/bin/ruby', '/usr/lib/ruby/2.1.0/ruby')
 	root.symlink('/usr/bin/python', '/usr/lib/python2.7/python')
 	root.symlink('/usr/bin/ghc', '/usr/lib/ghc/lib/ghc')
+	root.symlink('/usr/lib/haskell-packages', '/usr/lib/ghc/haskell-packages')
 	root.symlink('/tmp', '/home')
 
 	root.install('/usr/bin/ldwrapper', 'bin/ldwrapper')
@@ -252,9 +270,6 @@ with Chroot('root-compilers', '/') as root:
 with Chroot('root-openjdk', '/usr/lib/jvm/') as root:
 	root.copyfromhost('/usr/lib/jvm')
 
-with Chroot('root-nodejs', '/opt/nodejs/') as root:
-	root.extract('dist/node-v0.10.24-linux-x64.tar.gz', '423018f6a60b18d0dddf3007c325e0cc8cf55099', 'node-v0.10.24-linux-x64', 'http://nodejs.org/dist/v0.10.24/node-v0.10.24-linux-x64.tar.gz')
-
 with Chroot('root-python', '/usr/lib/python2.7/') as root:
 	root.copyfromhost('/usr/lib/python2.7', exclude=['/usr/lib/python2.7/dist-packages', '/usr/lib/python2.7/config-x86_64-linux-gnu'])
 	root.install('/usr/lib/python2.7/python', '/usr/bin/python')
@@ -262,8 +277,10 @@ with Chroot('root-python', '/usr/lib/python2.7/') as root:
 
 with Chroot('root-ruby', '/usr/lib/ruby/') as root:
 	root.copyfromhost('/usr/lib/ruby')
+	root.copyfromhost('/usr/lib/x86_64-linux-gnu/ruby/', relative_to='/usr/lib/x86_64-linux-gnu/ruby/')
 	root.install('/usr/lib/ruby/2.1.0/libruby-2.1.so.2.1', '/usr/lib/x86_64-linux-gnu/libruby-2.1.so.2.1')
 	root.install('/usr/lib/ruby/2.1.0/ruby', '/usr/bin/ruby')
 
 with Chroot('root-hs', '/usr/lib/ghc/') as root:
 	root.copyfromhost('/usr/lib/ghc')
+	root.copyfromhost('/usr/lib/haskell-packages/', relative_to='/usr/lib/')
