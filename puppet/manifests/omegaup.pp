@@ -13,46 +13,47 @@ define remote_file($source=undef, $mode='0644', $owner=undef, $group=undef) {
     require => Exec["wget_${title}"],
   }
 }
-class { 'apt':
-  always_apt_update    => false,
-  disable_keys         => undef,
-  proxy_host           => false,
-  proxy_port           => '8080',
-  purge_sources_list   => false,
-  purge_sources_list_d => false,
-  purge_preferences_d  => false,
-  update_timeout       => undef,
-  fancy_progress       => undef,
-}
-class { 'apt::release':
-  release_id => 'utopic',
-}
-Exec["apt_update"] -> Package <| |>
-include apt
 
 # Packages
-package { ['vim', 'curl', 'phpunit', 'phpunit-selenium', 'gcc', 'g++', 'git',
-           'fp-compiler', 'unzip', 'openssh-client', 'make', 'zip',
-           'libcap-dev', 'libgfortran3', 'ghc', 'libelf-dev', 'libruby',
-           'openjdk-8-jdk', 'ca-certificates']:
-  ensure  => present,
+class { 'apt':
+  update => {
+	  frequency => 'daily',
+	},
 }
 
-# HHVM
-apt::key { 'hhvm':
-  ensure     => 'present',
-  key_source => 'http://dl.hhvm.com/conf/hhvm.gpg.key',
-  key        => '1BE7A449',
+include apt
+
+apt::pin { 'vivid': priority => 700 }
+package { ['vim', 'curl', 'phpunit', 'phpunit-selenium', 'gcc', 'g++',
+					 'git', 'unzip', 'openssh-client', 'zip', 'openjdk-8-jdk',
+					 'ca-certificates']:
+  ensure  => present,
 }
+Class['apt::update'] -> Package<| |>
+
+# HHVM
 apt::source { 'hhvm':
   location    => 'http://dl.hhvm.com/ubuntu',
-  release     => 'utopic',
-  require     => Apt::Key['hhvm'],
-  include_src => false,
+  include     => {
+		src       => false,
+	},
+	key         => {
+		server    => 'hkp://keyserver.ubuntu.com:80',
+		id        => '0x36aef64d0207e7eee352d4875a16e7281be7a449',
+	},
 }
 package { 'hhvm':
   ensure  => present,
   require => Apt::Source['hhvm'],
+}
+
+# Minijail
+apt::ppa { 'ppa:omegaup/omegaup': }
+apt::ppa { 'ppa:omegaup/omegaup-karel': }
+package { 'omegaup-minijail':
+  ensure  => present,
+	require => [Apt::Ppa['ppa:omegaup/omegaup-karel'],
+	            Apt::Ppa['ppa:omegaup/omegaup']],
 }
 
 # Users
@@ -74,11 +75,12 @@ file { '/var/www':
 # MySQL
 class { '::mysql::server':
   root_password => $mysql_password,
+	service_provider => 'systemd',
 }
 class { '::mysql::bindings':
   java_enable => true,
 }
-include 'mysql::server'
+include '::mysql::server'
 file { '/tmp/omegaup-test-data.sql':
   ensure => 'file',
   source => 'puppet:///modules/omegaup/test-data.sql',
@@ -140,80 +142,9 @@ exec { 'certmanager':
 }
 
 # minijail
-exec { 'minijail':
-  command => "/usr/bin/make -C ${omegaup_root}/minijail",
-  user    => 'vagrant',
-  group   => 'vagrant',
-  creates => "${omegaup_root}/minijail/minijail0",
-  require => [Vcsrepo[$omegaup_root], Package['make'], Package['gcc'],
-              Package['libcap-dev'], Package['libelf-dev']],
-}
-file { $minijail_root:
-  ensure => 'directory',
-}
-file { ["${minijail_root}/bin", "${minijail_root}/dist",
-        "${minijail_root}/lib"]:
-  ensure  => 'directory',
-  require => File[$minijail_root],
-}
-file { "${minijail_root}/bin/karel":
-  ensure  => 'file',
-  source  => "${omegaup_root}/bin/karel",
-  require => [File["${minijail_root}/bin"], Vcsrepo[$omegaup_root]],
-}
-file { "${minijail_root}/bin/kcl":
-  ensure  => 'file',
-  source  => "${omegaup_root}/bin/kcl",
-  require => [File["${minijail_root}/bin"], Vcsrepo[$omegaup_root]],
-}
-file { "${minijail_root}/bin/minijail0":
-  ensure  => 'file',
-  source  => "${omegaup_root}/minijail/minijail0",
-  require => [File["${minijail_root}/bin"], Exec['minijail']],
-}
-file { "${minijail_root}/bin/libminijailpreload.so":
-  ensure  => 'file',
-  source  => "${omegaup_root}/minijail/libminijailpreload.so",
-  require => [File["${minijail_root}/bin"], Exec['minijail']],
-}
-file { "${minijail_root}/bin/ldwrapper":
-  ensure  => 'file',
-  source  => "${omegaup_root}/minijail/ldwrapper",
-  require => [File["${minijail_root}/bin"], Exec['minijail']],
-}
-file { "${minijail_root}/bin/minijail_syscall_helper":
-  ensure  => 'file',
-  source  => "${omegaup_root}/minijail/minijail_syscall_helper",
-  require => [File["${minijail_root}/bin"], Exec['minijail']],
-}
-file { "${minijail_root}/lib/libkarel.py":
-  ensure  => 'file',
-  source  => "${omegaup_root}/stuff/libkarel.py",
-  require => [File["${minijail_root}/lib"], Vcsrepo[$omegaup_root]],
-}
-file { "${minijail_root}/scripts":
-  ensure  => 'directory',
-  recurse => true,
-  source  => "${omegaup_root}/stuff/minijail-scripts",
-  require => [File[$minijail_root], Vcsrepo[$omegaup_root]],
-}
-file { '/tmp/mkroot':
-  ensure => 'file',
-  source => 'puppet:///modules/omegaup/mkroot',
-}
-exec { 'mkroot':
-  command => "/usr/bin/python /tmp/mkroot",
-  creates => "${minijail_root}/root",
-  cwd     => $minijail_root,
-  require => [File[$minijail_root], File['/tmp/mkroot'],
-              Package['openjdk-8-jdk'], Exec['minijail'], Package['libruby'],
-              Package['g++'], Package['gcc'], Package['ghc'],
-              Package['fp-compiler']],
-}
 file { '/etc/sudoers.d/minijail':
   ensure  => 'file',
-  content => "omegaup ALL = NOPASSWD: ${minijail_root}/bin/minijail0
-omegaup ALL = NOPASSWD: ${minijail_root}/bin/minijail_syscall_helper
+  content => "omegaup ALL = NOPASSWD: /var/lib/minijail/bin/minijail0
 
 ",
   mode    => '0440',
@@ -230,20 +161,40 @@ file { '/var/log/omegaup/service.log':
   group   => 'omegaup',
   require => File['/var/log/omegaup'],
 }
-file { '/etc/init.d/omegaup':
+file { '/etc/systemd/system/omegaup.service':
   ensure  => 'file',
   source  => "puppet:///modules/omegaup/omegaup.service",
-  mode    => '0755',
+  mode    => '0644',
+}
+file { "${omegaup_root}/bin/omegaup.conf.sample":
+  ensure  => 'file',
+  source  => "puppet:///modules/omegaup/omegaup.conf.sample",
+  mode    => '0644',
+  require => Vcsrepo[$omegaup_root],
 }
 exec { "${omegaup_root}/bin/omegaup.conf":
   creates => "${omegaup_root}/bin/omegaup.conf",
   user    => 'vagrant',
   group   => 'vagrant',
-  command => "/bin/sed -e \"s/db.user\\s*=.*\$/db.user=omegaup/;s/db.password\\s*=.*\$/db.password=${mysql_password}/;s/\\(.*\\.password\\)\\s*=.*\$/\\1=${keystore_password}/\" ${omegaup_root}/backend/grader/omegaup.conf.sample > ${omegaup_root}/bin/omegaup.conf",
-  require => Vcsrepo[$omegaup_root],
+  command => "/bin/sed -e \"s/db.user\\s*=.*\$/db.user=omegaup/;s/db.password\\s*=.*\$/db.password=${mysql_password}/;s/\\(.*\\.password\\)\\s*=.*\$/\\1=${keystore_password}/\" ${omegaup_root}/bin/omegaup.conf.sample > ${omegaup_root}/bin/omegaup.conf",
+  require => File["${omegaup_root}/bin/omegaup.conf.sample"],
 }
-file { ['/var/lib/omegaup/compile', '/var/lib/omegaup/grade',
-        '/var/lib/omegaup/input']:
+file { '/tmp/mkhexdirs.sh':
+  ensure => 'file',
+  source => 'puppet:///modules/omegaup/mkhexdirs.sh',
+	mode   => '0700',
+}
+exec { "submissions-directory":
+  creates => '/var/lib/omegaup/submissions',
+	command => '/tmp/mkhexdirs.sh /var/lib/omegaup/submissions www-data www-data',
+  require => [File['/tmp/mkhexdirs.sh'], User['www-data']],
+}
+exec { "grade-directory":
+  creates => '/var/lib/omegaup/grade',
+	command => '/tmp/mkhexdirs.sh /var/lib/omegaup/grade omegaup omegaup',
+  require => [File['/tmp/mkhexdirs.sh'], User['omegaup']],
+}
+file { ['/var/lib/omegaup/compile', '/var/lib/omegaup/input']:
   ensure  => 'directory',
   owner   => 'omegaup',
   group   => 'omegaup',
@@ -252,15 +203,16 @@ file { ['/var/lib/omegaup/compile', '/var/lib/omegaup/grade',
 service { 'omegaup':
   ensure  => running,
   enable  => true,
-  require => [File['/etc/init.d/omegaup'], File['/var/lib/omegaup/grade'],
+  provider => 'systemd',
+  require => [File['/etc/systemd/system/omegaup.service'],
+              Exec['grade-directory'],
               File["${omegaup_root}/bin/omegaup.jks"],
               Exec["${omegaup_root}/bin/omegaup.conf"],
               Package['libmysql-java'], Mysql::Db['omegaup']],
 }
 
 # Web application
-file { ['/var/lib/omegaup/problems', '/var/lib/omegaup/problems.git',
-        '/var/lib/omegaup/submissions']:
+file { ['/var/lib/omegaup/problems', '/var/lib/omegaup/problems.git']:
   ensure  => 'directory',
   owner   => 'www-data',
   group   => 'www-data',

@@ -2,8 +2,8 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-	config.vm.box = "omegaup-utopic"
-	config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/utopic/current/utopic-server-cloudimg-amd64-vagrant-disk1.box"
+	config.vm.box = "omegaup-vivid"
+	config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/vivid/current/vivid-server-cloudimg-amd64-vagrant-disk1.box"
 
 	# Redirige localhost:8080 hacia el puerto 80 de la VM
 	config.vm.network :forwarded_port, guest: 80, host: 8080
@@ -15,8 +15,7 @@ Vagrant.configure("2") do |config|
 	config.ssh.forward_x11 = true
 
 	config.vm.provider "virtualbox" do |vb|
-		# Compilar grader y runner necesita al menos 2GB de memoria
-		vb.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "1"]
+		vb.customize ["modifyvm", :id, "--memory", "1024", "--cpus", "1"]
 	end
 
 	config.vm.provision :shell do |shell|
@@ -34,7 +33,7 @@ Vagrant.configure("2") do |config|
 				puppet module install puppetlabs/vcsrepo --force --modulepath '/vagrant/puppet/modules'
 			fi
 			if [ ! -d /vagrant/puppet/modules/apt ]; then
-				puppet module install puppetlabs/apt --force --modulepath '/vagrant/puppet/modules' --version 1.6.0
+				puppet module install puppetlabs/apt --force --modulepath '/vagrant/puppet/modules'
 			fi
 			if [ ! -d /vagrant/puppet/modules/nginx ]; then
 				puppet module install jfryman/nginx --force --modulepath '/vagrant/puppet/modules'
@@ -48,7 +47,6 @@ Vagrant.configure("2") do |config|
 		puppet.manifest_file = 'omegaup.pp'
 		puppet.facter = {
 			'omegaup_root' => '/opt/omegaup',
-			'minijail_root' => '/var/lib/minijail',
 			'mysql_password' => 'omegaup',
 			'keystore_password' => 'omegaup',
 		}
