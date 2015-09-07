@@ -42,7 +42,7 @@
 		},
 		"embedded_runner_enabled": true
 	},
-	"true": {
+	"runner": {
 		"preserve": false
 	}
 }
