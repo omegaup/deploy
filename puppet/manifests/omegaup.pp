@@ -164,18 +164,17 @@ file { '/etc/systemd/system/omegaup.service':
   source  => "puppet:///modules/omegaup/omegaup.service",
   mode    => '0644',
 }
-file { "${omegaup_root}/bin/omegaup.conf.sample":
+file { "/tmp/omegaup.conf.sample":
   ensure  => 'file',
   source  => "puppet:///modules/omegaup/omegaup.conf.sample",
   mode    => '0644',
-  require => Vcsrepo[$omegaup_root],
 }
 exec { "${omegaup_root}/bin/omegaup.conf":
   creates => "${omegaup_root}/bin/omegaup.conf",
   user    => 'vagrant',
   group   => 'vagrant',
-  command => "/bin/sed -e \"s/db.user\\s*=.*\$/db.user=omegaup/;s/db.password\\s*=.*\$/db.password=${mysql_password}/;s/\\(.*\\.password\\)\\s*=.*\$/\\1=${keystore_password}/\" ${omegaup_root}/bin/omegaup.conf.sample > ${omegaup_root}/bin/omegaup.conf",
-  require => File["${omegaup_root}/bin/omegaup.conf.sample"],
+  command => "/bin/sed -e \"s/db.user\\s*=.*\$/db.user=omegaup/;s/db.password\\s*=.*\$/db.password=${mysql_password}/;s/\\(.*\\.password\\)\\s*=.*\$/\\1=${keystore_password}/\" /tmp/omegaup.conf.sample > ${omegaup_root}/bin/omegaup.conf",
+  require => [Vcsrepo[$omegaup_root], File["/tmp/omegaup.conf.sample"]],
 }
 file { '/tmp/mkhexdirs.sh':
   ensure => 'file',
