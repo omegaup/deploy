@@ -145,9 +145,9 @@ exec { 'certmanager':
 file { '/etc/sudoers.d/minijail':
   ensure  => 'file',
   content => "omegaup ALL = NOPASSWD: /var/lib/minijail/bin/minijail0
-
 ",
   mode    => '0440',
+  require => User['omegaup'],
 }
 
 # Grader service
