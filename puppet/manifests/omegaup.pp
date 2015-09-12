@@ -49,11 +49,9 @@ package { 'hhvm':
 
 # Minijail
 apt::ppa { 'ppa:omegaup/omegaup': }
-apt::ppa { 'ppa:omegaup/omegaup-karel': }
 package { 'omegaup-minijail':
   ensure  => present,
-	require => [Apt::Ppa['ppa:omegaup/omegaup-karel'],
-	            Apt::Ppa['ppa:omegaup/omegaup']],
+	require => Apt::Ppa['ppa:omegaup/omegaup'],
 }
 
 # Users
