@@ -14,8 +14,8 @@
 	"db": {
 		"driver": "com.mysql.jdbc.Driver",
 		"url": "jdbc:mysql://localhost/omegaup?autoReconnect=true",
-		"user": "root",
-		"password": "omegaup"
+		"user": "omegaup",
+		"password": "<%= @mysql_password %>"
 	},
 	"common": {
 		"roots": {
@@ -27,15 +27,15 @@
 		}
 	},
 	"ssl": {
-		"keystore_path": "/opt/omegaup/bin/omegaup.jks",
-		"keystore_password": "omegaup",
-		"truststore_path": "/opt/omegaup/bin/omegaup.jks",
-		"truststore_password": "omegaup",
-		"password": "omegaup"
+		"keystore_path": "<%= @root %>/bin/omegaup.jks",
+		"keystore_password": "<%= @keystore_password %>",
+		"truststore_path": "<%= @root %>/bin/omegaup.jks",
+		"truststore_password": "<%= @keystore_password %>",
+		"password": "<%= @keystore_password %>"
 	},
 	"grader": {
 		"port": 21680,
-		"memory_limit": 2048,		
+		"memory_limit": 2048,
 		"scoreboard_refresh": {
 			"url": "https://localhost/api/scoreboard/refresh/",
 			"token": "secrettoken"
