@@ -20,30 +20,32 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provision :shell do |shell|
 		shell.inline = "
-			if [ ! -d /vagrant/puppet/modules/concat ]; then
-				puppet module install puppetlabs/concat --force --modulepath '/vagrant/puppet/modules'
+			if [ ! -d /etc/puppet/modules/concat ]; then
+				puppet module install puppetlabs/concat --force
 			fi
-			if [ ! -d /vagrant/puppet/modules/stdlib ]; then
-				puppet module install puppetlabs/stdlib --force --modulepath '/vagrant/puppet/modules'
+			if [ ! -d /etc/puppet/modules/stdlib ]; then
+				puppet module install puppetlabs/stdlib --force
 			fi
-			if [ ! -d /vagrant/puppet/modules/mysql ]; then
-				puppet module install puppetlabs/mysql --force --modulepath '/vagrant/puppet/modules'
+			if [ ! -d /etc/puppet/modules/mysql ]; then
+				puppet module install puppetlabs/mysql --force
 			fi
-			if [ ! -d /vagrant/puppet/modules/vcsrepo ]; then
-				puppet module install puppetlabs/vcsrepo --force --modulepath '/vagrant/puppet/modules'
+			if [ ! -d /etc/puppet/modules/vcsrepo ]; then
+				puppet module install puppetlabs/vcsrepo --force
 			fi
-			if [ ! -d /vagrant/puppet/modules/apt ]; then
-				puppet module install puppetlabs/apt --force --modulepath '/vagrant/puppet/modules'
+			if [ ! -d /etc/puppet/modules/apt ]; then
+				puppet module install puppetlabs/apt --force
 			fi
-			if [ ! -d /vagrant/puppet/modules/nginx ]; then
-				puppet module install jfryman/nginx --force --modulepath '/vagrant/puppet/modules'
+			if [ ! -d /etc/puppet/modules/nginx ]; then
+				puppet module install jfryman/nginx --force
+			fi
+			if [ ! -d /etc/puppet/modules/omegaup ]; then
+				git clone https://github.com/omegaup/puppet.git /etc/puppet/modules/omegaup
 			fi"
 	end
 
 	# Instala todo usando Puppet
 	config.vm.provision :puppet do |puppet|
 		puppet.manifests_path = 'puppet/manifests'
-		puppet.module_path = 'puppet/modules'
 		puppet.manifest_file = 'omegaup.pp'
 		puppet.facter = {
 			'omegaup_root' => '/opt/omegaup',

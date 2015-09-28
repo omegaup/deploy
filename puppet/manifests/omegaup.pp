@@ -6,6 +6,8 @@ class { '::omegaup::database':
 }
 
 class { '::omegaup::developer_environment': }
+class { '::omegaup::minijail': }
+class { '::omegaup::grader': }
 
 class { '::omegaup':
 	require => [Class["::omegaup::database"],

@@ -1,3 +1,0 @@
-#!/bin/sh
-
-java -Xss1M -XX:+CMSClassUnloadingEnabled -jar `dirname $0`/sbt-launch.jar "$@"
