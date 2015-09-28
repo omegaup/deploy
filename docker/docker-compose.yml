@@ -13,4 +13,3 @@ web:
      - db
     environment:
      - MYSQL_ROOT_PASSWORD=my-secret-pw
-
