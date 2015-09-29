@@ -20,5 +20,5 @@ RUN puppet apply /etc/puppet/manifests/docker.pp --verbose --detailed-exitcodes 
 ADD supervisord.conf /etc/supervisor/conf.d/omegaup.conf
 
 # Finally run supervisord to reach a steady state.
-EXPOSE 80
+EXPOSE 80 21680
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/omegaup.conf"]

@@ -26,4 +26,6 @@ if [ ! -d /etc/puppet/modules/nginx ]; then
 fi
 if [ ! -d /etc/puppet/modules/omegaup ]; then
 	git clone https://github.com/omegaup/puppet.git /etc/puppet/modules/omegaup
+else
+	(cd /etc/puppet/modules/omegaup && git pull --rebase)
 fi
