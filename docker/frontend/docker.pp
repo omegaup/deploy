@@ -11,13 +11,13 @@ class { "::omegaup::grader":
 	services_ensure => stopped,
 	embedded_runner => 'false',
 	mysql_user => 'root',
-	mysql_host => 'db',
+	mysql_host => 'omegaup_db',
 }
 
 class { '::omegaup':
 	user => $user,
 	mysql_user => 'root',
-	mysql_host => 'db',
+	mysql_host => 'omegaup_db',
 	services_ensure => stopped,
 	require => Class["::omegaup::apt_sources"],
 }
