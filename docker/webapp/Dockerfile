@@ -24,6 +24,11 @@ RUN puppet apply /etc/puppet/manifests/docker.pp --verbose --detailed-exitcodes 
 # Install supervisord since Docker expects to run a single process
 ADD supervisord.conf /etc/supervisor/conf.d/omegaup.conf
 
+# Add an entrypoint to execute some commands needed in case a volume is mounted
+ADD docker-entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 # Finally run supervisord to reach a steady state.
 EXPOSE 80 21680
+VOLUME ["/var/log/omegaup", "/var/lib/omegaup", "/var/log/nginx", "/var/log/hhvm"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/omegaup.conf"]

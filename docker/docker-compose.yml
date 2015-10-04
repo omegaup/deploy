@@ -2,6 +2,8 @@ db:
     build: mysql/.
     ports:
      - "3306:3306"
+    volumes:
+     - ./volumes/lib/mysql:/var/lib/mysql
     environment:
      - MYSQL_ROOT_PASSWORD=my-secret-pw
 
@@ -11,5 +13,11 @@ web:
      - "8080:80"
     links:
      - db
+    volumes:
+     - ./volumes/log/omegaup:/var/log/omegaup
+     - ./volumes/log/nginx:/var/log/nginx
+     - ./volumes/log/hhvm:/var/log/hhvm
+     - ./volumes/log/omegaup:/var/log/omegaup
+     - ./volumes/lib/omegaup:/var/lib/omegaup
     environment:
      - MYSQL_ROOT_PASSWORD=my-secret-pw
