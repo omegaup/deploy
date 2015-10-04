@@ -1,5 +1,11 @@
 class { '::omegaup::apt_sources': }
 
+file { '/etc/omegaup': ensure => 'directory' }
+file { ['/etc/omegaup/frontend', '/etc/omegaup/grader']:
+	ensure => 'directory',
+	require => File['/etc/omegaup'],
+}
+
 class { "::omegaup::grader":
 	user => $user,
 	services_ensure => stopped,

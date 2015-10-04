@@ -11,6 +11,11 @@ RUN mkdir -p /tmp
 ADD puppet-modules.sh /tmp/
 RUN /bin/bash /tmp/puppet-modules.sh
 
+# Install the certificates
+RUN mkdir -p /etc/omegaup/{frontend,grader}
+ADD grader.jks /etc/omegaup/grader/keystore.jks
+ADD frontend.pem /etc/omegaup/frontend/certificate.pem
+
 # See http://github.com/docker/docker/pull/9176 
 ENV FACTER_mysql_password my-secret-pw
 ENV FACTER_user root
