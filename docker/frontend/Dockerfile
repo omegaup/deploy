@@ -12,8 +12,7 @@ ADD puppet-modules.sh /tmp/
 RUN /bin/bash /tmp/puppet-modules.sh
 
 # Install the certificates
-RUN mkdir -p /etc/omegaup/{frontend,grader}
-ADD grader.jks /etc/omegaup/grader/keystore.jks
+RUN mkdir -p /etc/omegaup/frontend
 ADD frontend.pem /etc/omegaup/frontend/certificate.pem
 
 # See http://github.com/docker/docker/pull/9176 
@@ -29,6 +28,6 @@ ADD docker-entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Finally run supervisord to reach a steady state.
-EXPOSE 80 21680
+EXPOSE 80
 VOLUME ["/var/log/omegaup", "/var/lib/omegaup", "/var/log/nginx", "/var/log/hhvm"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/omegaup.conf"]
