@@ -5,9 +5,31 @@ class { '::omegaup::database':
 	password => $mysql_password,
 }
 
+class { '::omegaup::certmanager': }
+file { '/etc/omegaup': ensure => 'directory' }
+file { ['/etc/omegaup/frontend', '/etc/omegaup/grader']:
+	ensure  => 'directory',
+	require => File['/etc/omegaup'],
+}
+omegaup::certmanager::cert { '/etc/omegaup/frontend/certificate.pem':
+  hostname => 'localhost',
+	owner    => 'www-data',
+	mode     => '0600',
+	require  => [File['/etc/omegaup/frontend'], User['www-data']],
+}
+omegaup::certmanager::cert { '/etc/omegaup/grader/keystore.jks':
+	hostname => 'localhost',
+  password => $keystore_password,
+	owner    => 'omegaup',
+	mode     => '0600',
+	require  => [File['/etc/omegaup/grader'], User['omegaup']],
+}
+
 class { '::omegaup::developer_environment': }
 class { '::omegaup::minijail': }
-class { '::omegaup::grader': }
+class { '::omegaup::grader':
+	require => Omegaup::Certmanager::Cert['/etc/omegaup/grader/keystore.jks'],
+}
 
 class { '::omegaup':
 	require => [Class["::omegaup::database"],
