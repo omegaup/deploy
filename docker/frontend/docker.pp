@@ -9,6 +9,7 @@ file { '/etc/omegaup/frontend':
 class { '::omegaup':
 	user => $user,
 	grader_host => 'https://omegaup_grader:21680',
+	broadcaster_host => 'http://omegaup_grader:39613',
 	mysql_user => 'root',
 	mysql_host => 'omegaup_db',
 	services_ensure => stopped,

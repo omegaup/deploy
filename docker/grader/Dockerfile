@@ -23,6 +23,6 @@ RUN puppet apply /etc/puppet/manifests/docker.pp --verbose --detailed-exitcodes 
 ADD https://github.com/omegaup/omegaup/raw/master/bin/grader.jar /grader.jar
 
 # Finally run supervisord to reach a steady state.
-EXPOSE 21680
+EXPOSE 21680 39613
 VOLUME ["/var/log/omegaup", "/var/lib/omegaup"]
 CMD ["/usr/bin/java", "-cp", "/usr/share/java/mysql.jar:/grader.jar", "com.omegaup.Service", "--config", "/etc/omegaup/grader/omegaup.conf", "--output", "/var/log/omegaup/service.log"]
