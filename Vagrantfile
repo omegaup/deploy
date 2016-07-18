@@ -2,8 +2,8 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-	config.vm.box = "omegaup-vivid"
-	config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/vivid/current/vivid-server-cloudimg-amd64-vagrant-disk1.box"
+	config.vm.box = "omegaup-wily"
+	config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/wily/current/wily-server-cloudimg-amd64-vagrant-disk1.box"
 
 	# Redirige localhost:8080 hacia el puerto 80 de la VM
 	config.vm.network :forwarded_port, guest: 80, host: 8080
@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
 	config.ssh.forward_x11 = true
 
 	config.vm.provider "virtualbox" do |vb|
-		vb.customize ["modifyvm", :id, "--memory", "1024", "--cpus", "1"]
+		vb.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "1"]
 	end
 
 	config.vm.provision :shell do |shell|
@@ -37,6 +37,9 @@ Vagrant.configure("2") do |config|
 			fi
 			if [ ! -d /etc/puppet/modules/nginx ]; then
 				puppet module install jfryman/nginx --force
+			fi
+			if [ ! -d /etc/puppet/modules/pear ]; then
+				puppet module install rafaelfc/pear --force
 			fi
 			if [ ! -d /etc/puppet/modules/omegaup ]; then
 				git clone https://github.com/omegaup/puppet.git /etc/puppet/modules/omegaup
