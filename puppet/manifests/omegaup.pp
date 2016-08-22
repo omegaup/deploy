@@ -2,7 +2,7 @@ class { '::omegaup::apt_sources': }
 
 class { '::omegaup::database':
   root_password => $mysql_password,
-	password => $mysql_password,
+	password      => $mysql_password,
 }
 
 class { '::omegaup::certmanager': }
@@ -25,13 +25,14 @@ omegaup::certmanager::cert { '/etc/omegaup/grader/keystore.jks':
 	require  => [File['/etc/omegaup/grader'], User['omegaup']],
 }
 
-class { '::omegaup::developer_environment': }
 class { '::omegaup::minijail': }
 class { '::omegaup::grader':
 	require => Omegaup::Certmanager::Cert['/etc/omegaup/grader/keystore.jks'],
 }
 
 class { '::omegaup':
-	require => [Class["::omegaup::database"],
-	            Class["::omegaup::apt_sources"]],
+	development_environment => true,
+	mysql_password          => $mysql_password,
+	require                 => [Class["::omegaup::database"],
+	                            Class["::omegaup::apt_sources"]],
 }
