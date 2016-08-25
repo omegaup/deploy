@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 sudo apt-get install -y -q puppet-common git
 sudo gem install r10k
