@@ -45,18 +45,9 @@ Vagrant.configure("2") do |config|
 				git clone https://github.com/omegaup/puppet.git /etc/puppet/modules/omegaup
 			else
 				(cd /etc/puppet/modules/omegaup && git pull)
-			fi"
-	end
-
-	# Instala todo usando Puppet
-	config.vm.provision :puppet do |puppet|
-		puppet.manifests_path = 'puppet/manifests'
-		puppet.manifest_file = 'omegaup.pp'
-		puppet.facter = {
-			'omegaup_root' => '/opt/omegaup',
-			'mysql_password' => 'omegaup',
-			'keystore_password' => 'omegaup',
-		}
+			fi
+			# Instala todo usando Puppet
+			FACTER_mysql_password=omegaup FACTER_keystore_password=omegaup puppet apply /etc/puppet/modules/omegaup/manifests/vagrant.pp"
 	end
 
 	# Sincronizar un folder local con vagrant. Muy útil si quieres desarrollar usando un IDE.
