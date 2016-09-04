@@ -25,6 +25,6 @@ This has been reported to work for some people, but it might not work on your ma
 1. Enable [Bash on Windows 10](https://msdn.microsoft.com/commandline/wsl/install_guide)
 2. Download [this repository](https://github.com/omegaup/deploy/archive/master.zip)
    and extract it somewhere accessible to `bash`.
-3. From `bash`, go to the extracted directory and run `./windows_install.sh`.
+3. From `bash`, go to the extracted directory and run `./windows-install.sh`.
  
 If this doesn't work, please use Vagrant.
