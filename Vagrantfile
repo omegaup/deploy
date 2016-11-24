@@ -36,7 +36,7 @@ Vagrant.configure("2") do |config|
 				puppet module install puppetlabs/apt --force
 			fi
 			if [ ! -d /etc/puppet/modules/nginx ]; then
-				puppet module install jfryman/nginx --force
+				puppet module install puppet-nginx --force
 			fi
 			if [ ! -d /etc/puppet/modules/pear ]; then
 				puppet module install rafaelfc/pear --force
