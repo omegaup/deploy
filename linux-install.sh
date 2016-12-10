@@ -6,4 +6,4 @@
 r10k puppetfile install
 
 # Install everything using Puppet
-FACTER_mysql_password=omegaup FACTER_keystore_password=omegaup puppet apply /etc/puppet/modules/omegaup/manifests/vagrant.pp
+FACTER_mysql_password=omegaup FACTER_keystore_password=omegaup puppet apply --modulepath=/etc/puppet/modules /etc/puppet/modules/omegaup/manifests/vagrant.pp
