@@ -6,4 +6,9 @@
 (cd /vagrant && r10k puppetfile install)
 
 # Install everything using Puppet
-FACTER_user=vagrant FACTER_mysql_password=omegaup FACTER_keystore_password=omegaup puppet apply --modulepath=/etc/puppet/modules /etc/puppet/modules/omegaup/manifests/vagrant.pp
+if grep xenial /etc/lsb-release > /dev/null ; then
+	username=ubuntu
+else
+	username=vagrant
+fi
+FACTER_user="${username}" FACTER_mysql_password=omegaup FACTER_keystore_password=omegaup puppet apply --modulepath=/etc/puppet/modules /etc/puppet/modules/omegaup/manifests/vagrant.pp
