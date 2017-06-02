@@ -20,6 +20,16 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provision :shell, path: "linux-install.sh"
 
-	# Sincronizar un folder local con vagrant. Muy útil si quieres desarrollar usando un IDE.
+	# Sincronizar un folder local con vagrant. Muy útil si quieres desarrollar
+	# usando un IDE.  Esto NO funciona en Windows, solo en Linux / macOS.
+	#
+	# La razón es porque el script de instalación intenta crear un symlink en
+	# /opt/omegaup, y Windows considera esto como una operación privilegiada.
+	# Existe una manera para usarlo a partir de Windows 10 Build 14972, pero
+	# necesita que Puppet se actualice con la nueva bandera descrita en
+	#
+	# https://blogs.windows.com/buildingapps/2016/12/02/symlinks-windows-10/#b1GbewbdoOuFHttq.97
+	#
+	# para que se pueda utilizar correctamente.
 	config.vm.synced_folder "omegaup", "/opt/omegaup", create: true, disabled: true
 end
