@@ -1,6 +1,6 @@
 moduledir '/etc/puppet/modules'
 
-mod 'darin-zypprepo', '1.0.3'
+mod 'darin-zypprepo', '1.0.2'
 mod 'example42-puppi', '2.2.3'
 mod 'example42-yum', '2.1.28'
 mod 'puppet-archive', '1.3.0'
