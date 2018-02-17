@@ -4,7 +4,6 @@
 Vagrant.configure("2") do |config|
 	config.vm.box = "omegaup-xenial"
 	config.vm.box_url = "http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-vagrant.box"
-	config.ssh.username = "ubuntu"
 
 	# Redirige localhost:8080 hacia el puerto 80 de la VM
 	config.vm.network :forwarded_port, guest: 80, host_ip: "127.0.0.1", host: 8080
