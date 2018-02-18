@@ -1,2 +1,4 @@
 .vagrant
 docker/volumes
+omegaup/
+*.log
