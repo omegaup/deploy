@@ -27,4 +27,4 @@ install_packages puppet-common ruby git
 install_r10k
 (cd /vagrant && r10k puppetfile install)
 
-FACTER_user=vagrant FACTER_mysql_password=omegaup FACTER_keystore_password=omegaup puppet apply --modulepath=/etc/puppet/modules /etc/puppet/modules/omegaup/manifests/vagrant.pp
+puppet apply --modulepath=/etc/puppet/modules /etc/puppet/modules/omegaup/manifests/vagrant.pp
