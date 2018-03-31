@@ -18,7 +18,14 @@ Vagrant.configure("2") do |config|
 		vb.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "1"]
 	end
 
-	config.vm.provision :shell, path: "linux-install.sh"
+	config.vm.provision :shell do |s|
+		s.path = "linux-install.sh"
+		s.env = {
+			# Si tienes un fork de omegaUp en GitHub, agrega tu nombre de usuario
+			# aquí para que tu fork esté disponible en /opt/omegaup como 'origin'.
+			'github_username' => '',
+		}
+	end
 
 	# Sincronizar un folder local con vagrant. Muy útil si quieres desarrollar
 	# usando un IDE. Desactívalo si no lo necesitas (en otras palabras, si puedes
