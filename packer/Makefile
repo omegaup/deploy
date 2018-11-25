@@ -1,4 +1,8 @@
-PACKER_VERSION=1.2.2
+PACKER_VERSION=1.3.5
+
+.PHONY: all
+all: packer box/box.ovf
+	./packer build vagrant-box.json
 
 packer:
 	wget https://releases.hashicorp.com/packer/$(PACKER_VERSION)/packer_$(PACKER_VERSION)_linux_amd64.zip
@@ -7,7 +11,4 @@ packer:
 
 box/box.ovf:
 	mkdir -p box
-	curl http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-vagrant.box | tar -x -C box
-
-all: packer box/box.ovf
-	./packer build vagrant-box.json
+	curl http://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64-vagrant.box | tar -x -C box

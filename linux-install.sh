@@ -31,38 +31,44 @@ install_r10k () {
 
 install_hiera_yaml () {
 	local hiera_yaml=/etc/puppet/hiera.yaml
-	local vm_yaml=/etc/puppet/code/environments/production/hieradata/vm.yaml
+	local vm_yaml=/etc/puppet/code/hiera/vm.yaml
 	if [ ! -f "${hiera_yaml}" ]; then
 		sudo mkdir -p "$(dirname "${hiera_yaml}")"
-		sudo tee "${hiera_yaml}" > /dev/null <<EOF
----
-:backends:
-  - yaml
-:yaml:
-  :datadir: "/etc/puppet/code/environments/%{environment}/hieradata"
-:hierarchy:
-  - vm
-EOF
 	fi
+	sudo tee "${hiera_yaml}" > /dev/null <<EOF
+---
+version: 5
+
+defaults:
+  datadir: "/etc/puppet/code/hiera"
+  data_hash: yaml_data
+
+hierarchy:
+  - name: "Vagrant VM"
+    path: "vm.yaml"
+EOF
 	if [ ! -f "${vm_yaml}" ]; then
 		sudo mkdir -p "$(dirname "${vm_yaml}")"
 		sudo tee "${vm_yaml}" > /dev/null <<EOF
 ---
+version: 5
 EOF
 	fi
 	if [ -n "${github_username}" ] && \
 	   curl --silent --fail --head "https://api.github.com/repos/${github_username}/omegaup" > /dev/null; then
 		sudo tee "${vm_yaml}" > /dev/null <<EOF
 ---
+version: 5
+
 omegaup::github_remotes:
   origin: ${github_username}/omegaup
 EOF
 	fi
 }
 
-install_packages puppet-common ruby git
+install_packages puppet ruby git
 install_r10k
 install_hiera_yaml
 (cd "${CURRENT_DIR}" && sudo r10k puppetfile install)
 
-sudo puppet apply --modulepath=/etc/puppet/modules /etc/puppet/modules/omegaup/manifests/vagrant.pp
+sudo puppet apply /usr/share/puppet/modules/omegaup/manifests/vagrant.pp
