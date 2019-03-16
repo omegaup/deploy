@@ -3,6 +3,7 @@
 
 Vagrant.configure("2") do |config|
 	config.vm.box = "omegaup/dev"
+	config.vm.box_version = "2.0.3"
 
 	# Redirige localhost:8080 hacia el puerto 80 de la VM
 	config.vm.network :forwarded_port, guest: 80, host_ip: "127.0.0.1", host: 8080
@@ -14,7 +15,7 @@ Vagrant.configure("2") do |config|
 	config.ssh.forward_x11 = true
 
 	config.vm.provider "virtualbox" do |vb|
-		vb.customize ["modifyvm", :id, "--memory", "2048", "--cpus", "1"]
+		vb.customize ["modifyvm", :id, "--memory", "3072", "--cpus", "1"]
 	end
 
 	config.vm.provision :shell do |s|
