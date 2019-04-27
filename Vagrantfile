@@ -2,9 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-	config.vm.box = "ubuntu/bionic64"
-	# La última versión tiene un kernel panic :/
-	config.vm.box_version = "20190225.0.0"
+	config.vm.box = "omegaup/dev"
 
 	# Redirige localhost:8080 hacia el puerto 80 de la VM
 	config.vm.network :forwarded_port, guest: 80, host_ip: "127.0.0.1", host: 8080
