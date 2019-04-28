@@ -71,4 +71,5 @@ install_r10k
 install_hiera_yaml
 (cd "${CURRENT_DIR}" && sudo r10k puppetfile install)
 
-sudo puppet apply /usr/share/puppet/modules/omegaup/manifests/vagrant.pp
+# Some dependent modules outside of our control use deprecated features.
+sudo puppet apply --disable_warnings=deprecations /usr/share/puppet/modules/omegaup/manifests/vagrant.pp
