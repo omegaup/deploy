@@ -19,8 +19,11 @@ install_packages () {
 	done
 	[[ ${#package_names[@]} -gt 0 ]] || return 0
 
-	sudo apt update --assume-yes --quiet
-	sudo apt install --assume-yes --quiet ${package_names[*]}
+	# We haven't set up date/time yet, so the package list may have a valid time that's yet to occur.
+	sudo apt update --assume-yes --quiet -o Acquire::Check-Date=false
+	sudo apt install --assume-yes --quiet -o Acquire::Check-Date=false ${package_names[*]} ntpdate
+	# Now we can update the VM's time so that any future operations work well.
+	sudo ntpdate pool.ntp.org
 }
 
 install_r10k () {
