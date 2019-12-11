@@ -1,10 +1,10 @@
 {
-  "builders": [{
-    "type": "virtualbox-ovf",
+	"builders": [{
+		"type": "virtualbox-ovf",
 		"communicator": "ssh",
 		"boot_wait": "20s",
-    "ssh_username": "vagrant",
-    "ssh_password": "vagrant",
+		"ssh_username": "vagrant",
+		"ssh_password": "vagrant",
 		"ssh_private_key_file": "vagrant",
 		"shutdown_command": "sudo systemctl poweroff",
 		"source_path": "box/box.ovf",
@@ -12,7 +12,7 @@
 			["modifyvm", "{{.Name}}", "--nic1", "nat"],
 			["modifyvm", "{{.Name}}", "--uart1", "0x3F8", "4"]
 		]
-  }],
+	}],
 	"provisioners": [{
 		"type": "file",
 		"source": "../Puppetfile",
@@ -22,7 +22,10 @@
 		"script": "../linux-install.sh"
 	}, {
 		"type": "shell",
-		"inline": ["sudo apt autoremove -y"]
+		"inline": [
+			"sudo apt autoremove -y",
+			"sudo apt clean -y"
+		]
 	}],
 	"post-processors": ["vagrant"]
 }

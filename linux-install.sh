@@ -72,7 +72,7 @@ EOF
 install_packages puppet ruby git
 install_r10k
 install_hiera_yaml
-(cd "${CURRENT_DIR}" && sudo r10k puppetfile install)
+sudo r10k puppetfile install --puppetfile="${CURRENT_DIR}/Puppetfile"
 
 # Some dependent modules outside of our control use deprecated features.
 sudo puppet apply --disable_warnings=deprecations /usr/share/puppet/modules/omegaup/manifests/vagrant.pp
