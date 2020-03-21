@@ -2,13 +2,10 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-	config.vm.box = "omegaup/dev"
-	config.vm.box_version = "2.0.3"
+	config.vm.box = "omegaup/dev-focal"
 
 	# Redirige localhost:8080 hacia el puerto 80 de la VM
 	config.vm.network :forwarded_port, guest: 80, host_ip: "127.0.0.1", host: 8080
-	# Expone el puerto del servicio del backend.
-	config.vm.network :forwarded_port, guest: 21680, host_ip: "127.0.0.1", host: 21680
 
 	# Permite usar las llaves SSH del host en la VM
 	config.ssh.forward_agent = true

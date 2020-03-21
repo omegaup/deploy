@@ -2,7 +2,8 @@
 	"builders": [{
 		"type": "virtualbox-ovf",
 		"communicator": "ssh",
-		"boot_wait": "20s",
+		"boot_wait": "120s",
+		"ssh_wait_timeout": "10000s",
 		"ssh_username": "vagrant",
 		"ssh_password": "vagrant",
 		"ssh_private_key_file": "vagrant",

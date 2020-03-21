@@ -55,6 +55,8 @@ EOF
 		sudo tee "${vm_yaml}" > /dev/null <<EOF
 ---
 version: 5
+
+php::globals::php_version: '7.4'
 EOF
 	fi
 	if [ -n "${github_username}" ] && \
@@ -63,13 +65,15 @@ EOF
 ---
 version: 5
 
+php::globals::php_version: '7.4'
+
 omegaup::github_remotes:
   origin: ${github_username}/omegaup
 EOF
 	fi
 }
 
-install_packages puppet ruby git
+install_packages puppet ruby git virtualbox-guest-dkms virtualbox-guest-x11
 install_r10k
 install_hiera_yaml
 sudo r10k puppetfile install --puppetfile="${CURRENT_DIR}/Puppetfile"

@@ -1,4 +1,4 @@
-PACKER_VERSION=1.4.3
+PACKER_VERSION=1.5.4
 
 .PHONY: all
 all: packer_virtualbox-ovf_virtualbox.box packer box/box.ovf
@@ -13,5 +13,5 @@ packer:
 
 box/box.ovf:
 	mkdir -p box
-	curl http://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64-vagrant.box | tar -x -C box
+	curl http://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-vagrant.box | tar -x -C box
 	./resize.py box
