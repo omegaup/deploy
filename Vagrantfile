@@ -25,9 +25,13 @@ Vagrant.configure("2") do |config|
 	end
 
 	# Sincronizar un folder local con vagrant. Muy útil si quieres desarrollar
-	# usando un IDE. Desactívalo si no lo necesitas (en otras palabras, si puedes
-	# trabajar únicamente via SSH y no necesitas usar un IDE) porque vuelve un
-	# poco más lenta la máquina virtual.
+	# usando un IDE. No está activado por default porque vuelve bastante más
+	# lenta la máquina virtual, y muchas veces ha ocurrido que se des-sincroniza
+	# el estado entre la máquina virtual y el checkout externo del código.
+	#
+	# Una alternativa posiblemente mejor es usar VSCode como IDE, que tiene
+	# soporte semi-nativo de SSH:
+	# https://github.com/omegaup/omegaup/wiki/C%C3%B3mo-desarrollar-usando-VSCode-Remote
 	#
 	# Nota importante: Esto NO funciona en Windows, solo en Linux / macOS.
 	#
@@ -39,6 +43,6 @@ Vagrant.configure("2") do |config|
 	# https://blogs.windows.com/buildingapps/2016/12/02/symlinks-windows-10/#b1GbewbdoOuFHttq.97
 	#
 	# para que se pueda utilizar correctamente.
-	enable_synced_folder = !Vagrant::Util::Platform.windows?
+	enable_synced_folder = false
 	config.vm.synced_folder "omegaup", "/opt/omegaup", create: true, disabled: !enable_synced_folder, type: "virtualbox"
 end
