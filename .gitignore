@@ -1,5 +1,4 @@
 .vagrant
-docker/volumes
 omegaup/
 packer/box
 packer/output-virtualbox-ovf
