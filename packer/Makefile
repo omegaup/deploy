@@ -1,4 +1,4 @@
-PACKER_VERSION=1.5.4
+PACKER_VERSION=1.6.0
 
 .PHONY: all
 all: packer_virtualbox-ovf_virtualbox.box packer box/box.ovf
