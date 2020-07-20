@@ -1,32 +1,39 @@
 {
-	"builders": [{
-		"type": "virtualbox-ovf",
-		"communicator": "ssh",
-		"boot_wait": "120s",
-		"ssh_wait_timeout": "10000s",
-		"ssh_username": "vagrant",
-		"ssh_password": "vagrant",
-		"ssh_private_key_file": "vagrant",
-		"shutdown_command": "sudo systemctl poweroff",
-		"source_path": "box/box.ovf",
-		"vboxmanage": [
-			["modifyvm", "{{.Name}}", "--nic1", "nat"],
-			["modifyvm", "{{.Name}}", "--uart1", "0x3F8", "4"]
-		]
-	}],
-	"provisioners": [{
-		"type": "file",
-		"source": "../Puppetfile",
-		"destination": "/tmp/Puppetfile"
-	}, {
-		"type": "shell",
-		"script": "../linux-install.sh"
-	}, {
-		"type": "shell",
-		"inline": [
-			"sudo apt autoremove -y",
-			"sudo apt clean -y"
-		]
-	}],
+	"builders": [
+		{
+			"type": "virtualbox-ovf",
+			"communicator": "ssh",
+			"source_path": "./box/box.ovf",
+			"headless": true,
+			"ssh_username": "vagrant",
+			"ssh_password": "vagrant",
+			"ssh_private_key_file": "./vagrant",
+			"shutdown_command": "sudo systemctl poweroff",
+			"vboxmanage": [
+				["modifyvm", "{{.Name}}", "--ostype", "Ubuntu_64"],
+				["modifyvm", "{{.Name}}", "--vrde", "off" ],
+				["modifyvm", "{{.Name}}", "--memory", "3072"],
+				["modifyvm", "{{.Name}}", "--cpus", "1"],
+				["modifyvm", "{{.Name}}", "--uart1", "0x3F8", "4"],
+				["modifyvm", "{{.Name}}", "--uartmode1", "file", "./console.log"]
+			]
+		}
+	],
+	"provisioners": [
+		{
+			"type": "file",
+			"source": "../Puppetfile",
+			"destination": "/tmp/Puppetfile"
+		}, {
+			"type": "shell",
+			"script": "../linux-install.sh"
+		}, {
+			"type": "shell",
+			"scripts": [
+				"cleanup.sh",
+				"minimize.sh"
+			]
+		}
+	],
 	"post-processors": ["vagrant"]
 }

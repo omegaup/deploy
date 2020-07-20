@@ -12,6 +12,8 @@ packer:
 	rm packer_$(PACKER_VERSION)_linux_amd64.zip
 
 box/box.ovf:
-	mkdir -p box
-	curl http://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-vagrant.box | tar -x -C box
-	./resize.py box
+	rm -rf box .tmp.box
+	mkdir -p .tmp.box
+	curl http://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64-vagrant.box | tar -x -C .tmp.box
+	./resize.py .tmp.box
+	mv .tmp.box box
